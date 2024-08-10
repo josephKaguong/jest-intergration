@@ -1,0 +1,17 @@
+yarn add --dev jest @types/jest @testing-library/react @testing-library/jest-dom @testing-library/dom @testing-library/user-event
+
+yarn add --dev @babel/core @babel/preset-env @babel/preset-react @babel/preset-typescript babel-jest indentity-obj-proxy jest-environment-jsdom
+
+
+add the coverage to package.json
+
+"coverage":"yarn test --coverage --watchAll --collectCoverageFrom='src/components/**/*.{ts,tsx}'
+   --collectCoverageFrom(!src/components/**/{types,constants,stories,test,spec}.{ts,tsx})
+ "
+
+
+ add to ts.configapp.json
+
+ "types":['@testing-library/jest-dom']
+
+ now the tests will run correctly
