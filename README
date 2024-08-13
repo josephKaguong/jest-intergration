@@ -1,18 +1,76 @@
+#reqired dependancies
+
 yarn add --dev jest @types/jest @testing-library/react @testing-library/jest-dom @testing-library/dom @testing-library/user-event
 
 yarn add --dev @babel/core @babel/preset-env @babel/preset-react @babel/preset-typescript babel-jest  jest-environment-jsdom
 yarn add identity-obj-proxy
 
 
-add the coverage to package.json
+##add the coverage to package.json
 
 "coverage":"yarn test --coverage --watchAll --collectCoverageFrom='src/components/**/*.{ts,tsx}'
    --collectCoverageFrom='!src/components/**/{types,constants,stories,test,spec}.{ts,tsx}''
  "
 
 
- add to ts.configapp.json
+##add to ts.configapp.json
 
  "types":['@testing-library/jest-dom']
 
  make any necessary changes where needed
+
+
+
+  ##mock service provider
+  creating the msw config by #npx msw init public/--save
+ ./src/mocks create handlers.ts and browser.ts
+
+ ##handlers.ts
+ import{http,HttpResponse} from 'msw'
+
+ export const handler=[
+    http.get('api',()=>{
+        return HttpResponse.json([
+            {
+                id:1,
+                name:'yuna'
+            }
+        ] )
+    })
+]
+
+    ##browser.ts
+
+import {setupWorker} from 'msw/browser'
+import{handlers} from './handlers'
+
+export const worker=setupWorker(...handlers)
+
+worker.start({
+    serviceWorker: {
+      url: '/mockServiceWorker.js',
+    },
+  });
+
+          ##//configure the main
+
+  async function enableMocking() {
+  if (process.env.NODE_ENV !== 'development') {
+    return
+  }
+ 
+  const { worker } = await import('./mocks/browser.ts')
+ 
+  // `worker.start()` returns a Promise that resolves
+  // once the Service Worker is up and ready to intercept requests.
+  return worker.start()
+}
+
+enableMocking().then(()=>{
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  )
+
+})
